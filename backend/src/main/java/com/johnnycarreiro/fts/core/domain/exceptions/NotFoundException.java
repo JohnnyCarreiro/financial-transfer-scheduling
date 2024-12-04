@@ -13,7 +13,7 @@ public class NotFoundException extends DomainException {
   }
 
   public static NotFoundException with(
-      final Class<? extends Entity<?>> anEntity,
+      final Class<? extends Entity<?, ?>> anEntity,
       final Identifier<?> id) {
     final var anError = "%s with ID %s was not found".formatted(
         anEntity.getSimpleName(),
