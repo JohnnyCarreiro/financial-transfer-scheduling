@@ -5,7 +5,7 @@ import com.johnnycarreiro.fts.core.domain.validation.ValidationHandler;
 import java.time.Instant;
 import java.util.Objects;
 
-public abstract class Entity<ID extends Identifier<ID>> {
+public abstract class Entity<IDType, ID extends Identifier<IDType>> {
 
   protected final ID id;
   private final Instant createdAt;
@@ -55,7 +55,7 @@ public abstract class Entity<ID extends Identifier<ID>> {
       return true;
     if (o == null || getClass() != o.getClass())
       return false;
-    Entity<?> entity = (Entity<?>) o;
+    Entity<?, ?> entity = (Entity<?, ?>) o;
     return Objects.equals(getId(), entity.getId())
         && Objects.equals(getCreatedAt(), entity.getCreatedAt())
         && Objects.equals(getUpdatedAt(), entity.getUpdatedAt());
