@@ -17,6 +17,13 @@ import java.util.Optional;
 public interface TransferRepository {
 
   /**
+   * Lists all Transfer entities from the persistent store.
+   * 
+   * @return a Result containing a list of Transfer entities.
+   */
+  Result<List<Transfer>, DomainException> listAll();
+
+  /**
    * Saves a Transfer entity to the persistent store.
    * If the entity already exists, it should be updated.
    *
@@ -31,7 +38,7 @@ public interface TransferRepository {
    * @param transferId the unique identifier of the Transfer.
    * @return a Result containing the Transfer if found or an error if not.
    */
-  Result<Optional<Transfer>, DomainException> findById(UUID transferId);
+  Result<Optional<Transfer>, DomainException> findById(String transferId);
 
   /**
    * Updates an existing Transfer entity.
@@ -42,15 +49,17 @@ public interface TransferRepository {
    */
   Result<Void, DomainException> update(Transfer transfer);
 
-  /**
-   * Finds an applicable TransferFee based on the given amount and transfer type.
-   *
-   * @param amount       the amount of the transfer.
-   * @param transferType the type of the transfer.
-   * @return a Result containing the applicable TransferFee if found or an error
-   *         if not.
-   */
-  Result<Optional<TransferFee>, DomainException> findApplicableFee(BigDecimal amount, String transferType);
+  // /**
+  // * Finds an applicable TransferFee based on the given amount and transfer
+  // type.
+  // *
+  // * @param amount the amount of the transfer.
+  // * @param transferType the type of the transfer.
+  // * @return a Result containing the applicable TransferFee if found or an error
+  // * if not.
+  // */
+  // Result<Optional<TransferFee>, DomainException> findApplicableFee(BigDecimal
+  // amount, String transferType);
 
   /**
    * Lists all TransferFee entities.
