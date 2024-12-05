@@ -58,18 +58,20 @@ public abstract class Entity<IDType, ID extends Identifier<IDType>> {
     Entity<?, ?> entity = (Entity<?, ?>) o;
     return Objects.equals(getId(), entity.getId())
         && Objects.equals(getCreatedAt(), entity.getCreatedAt())
-        && Objects.equals(getUpdatedAt(), entity.getUpdatedAt());
+        && Objects.equals(getUpdatedAt(), entity.getUpdatedAt())
+        && Objects.equals(getDeletedAt(), entity.getDeletedAt());
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(getId(), getCreatedAt(), getUpdatedAt());
+    return Objects.hash(getId(), getCreatedAt(), getUpdatedAt(), getDeletedAt());
   }
 
   @Override
   public String toString() {
     return "id=" + id.getValue() +
         ", createdAt=" + createdAt +
-        ", updatedAt=" + updatedAt;
+        ", updatedAt=" + updatedAt +
+        ", deletedAt=" + deletedAt;
   }
 }
