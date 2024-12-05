@@ -234,6 +234,23 @@ public class Transfer extends AggregateRoot<String, EntityId> {
   }
 
   /**
+   * It calculates the total fee for the transfer
+   * 
+   * @return the total fee
+   */
+  private BigDecimal calculateTotalFee() {
+    BigDecimal percentageFee = this.transferFee.getPercentageFee().multiply(this.amount);
+    return this.transferFee.getFixedFee().add(percentageFee);
+  }
+
+  /**
+   * @return the total fee
+   */
+  public BigDecimal getTotalFee() {
+    return calculateTotalFee();
+  }
+
+  /**
    * Checks equality based on source account, destination account, amount, and
    * scheduled date.
    */
