@@ -8,6 +8,7 @@ import com.johnnycarreiro.fts.domain.entities.transfer_fee.TransferFee;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Repository interface for managing the lifecycle of the Transfer aggregate.
@@ -30,7 +31,7 @@ public interface TransferRepository {
    * @param transferId the unique identifier of the Transfer.
    * @return a Result containing the Transfer if found or an error if not.
    */
-  Result<Transfer, DomainException> findById(UUID transferId);
+  Result<Optional<Transfer>, DomainException> findById(UUID transferId);
 
   /**
    * Updates an existing Transfer entity.
@@ -49,7 +50,7 @@ public interface TransferRepository {
    * @return a Result containing the applicable TransferFee if found or an error
    *         if not.
    */
-  Result<TransferFee, DomainException> findApplicableFee(BigDecimal amount, String transferType);
+  Result<Optional<TransferFee>, DomainException> findApplicableFee(BigDecimal amount, String transferType);
 
   /**
    * Lists all TransferFee entities.
