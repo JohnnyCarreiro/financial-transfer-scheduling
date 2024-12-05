@@ -2,7 +2,7 @@ package com.johnnycarreiro.fts.unitary.domain.entities;
 
 import com.johnnycarreiro.fts.core.domain.exceptions.DomainException;
 import com.johnnycarreiro.fts.core.domain.validation.ThrowsValidationHandler;
-import com.johnnycarreiro.fts.domain.value_objects.transfer_fee.TransferFee;
+import com.johnnycarreiro.fts.domain.entities.transfer_fee.TransferFee;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

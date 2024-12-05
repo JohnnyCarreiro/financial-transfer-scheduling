@@ -10,7 +10,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import com.johnnycarreiro.fts.domain.services.TransferFeeCalculatorService;
-import com.johnnycarreiro.fts.domain.value_objects.transfer_fee.TransferFee;
+import com.johnnycarreiro.fts.domain.entities.transfer_fee.TransferFee;
 
 @DisplayName("Transfer Fee Test Suite")
 public class TransferFeeCalculatorServiceTest {
@@ -24,7 +24,8 @@ public class TransferFeeCalculatorServiceTest {
         TransferFee.create("De 21 a 30 dias", 21, 30, new BigDecimal("0.00"), new BigDecimal("0.069")),
         TransferFee.create("De 31 a 40 dias", 31, 40, new BigDecimal("0.00"), new BigDecimal("0.047")),
         TransferFee.create("De 41 a 50 dias", 41, 50, new BigDecimal("0.00"), new BigDecimal("0.017")));
-    TransferFeeCalculatorService service = new TransferFeeCalculatorService(fees);
+    TransferFeeCalculatorService service = new TransferFeeCalculatorService();
+    service.setTransferFee(fees);
 
     var scheduledDateAt = Instant.parse("2024-12-01T10:00:00Z");
     var scheduledDateFor = Instant.parse("2024-12-11T10:00:00Z");

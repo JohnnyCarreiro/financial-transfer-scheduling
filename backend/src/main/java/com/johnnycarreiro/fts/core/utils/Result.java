@@ -71,21 +71,28 @@ public class Result<T, E> {
   /**
    * Gets the success value, if present.
    *
-   * @return an Optional containing the success value, or empty if not present
+   * @return The success value, or empty if not present
+   * @throws IllegalStateException if the result is an error
    */
-  public Optional<T> getSuccess() {
-    return Optional.ofNullable(success);
+  public T getSuccess() {
+    if (isError()) {
+      throw new IllegalStateException("Cannot get success value when result is an error");
+    }
+    return success;
   }
 
   /**
    * Gets the error value, if present.
    *
-   * @return an Optional containing the error value, or empty if not present
+   * @return The error value, or empty if not present
+   * @throws IllegalStateException if the result is a success
    */
-  public Optional<E> getError() {
-    return Optional.ofNullable(error);
+  public E getError() {
+    if (isSuccess()) {
+      throw new IllegalStateException("Cannot get error value when result is a success");
+    }
+    return error;
   }
-
   // Functional API
 
   /**
