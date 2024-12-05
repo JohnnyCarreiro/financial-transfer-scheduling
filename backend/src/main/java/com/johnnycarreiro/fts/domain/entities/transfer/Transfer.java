@@ -122,14 +122,14 @@ public class Transfer extends AggregateRoot<String, EntityId> {
       final Account sourceAccount,
       final Account destinationAccount,
       final double amount,
-      final String schedluedDate,
+      final Instant schedluedDate,
       final TransferFee transferFee) {
     return new Transfer(
         EntityId.create().getValue(),
         sourceAccount,
         destinationAccount,
         BigDecimal.valueOf(amount),
-        schedluedDate != null ? Instant.parse(schedluedDate) : null,
+        schedluedDate,
         Instant.now(),
         transferFee,
         transferFee.getFixedFee(),
