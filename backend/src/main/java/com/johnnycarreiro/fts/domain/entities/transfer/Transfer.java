@@ -4,7 +4,7 @@ import com.johnnycarreiro.fts.core.domain.AggregateRoot;
 import com.johnnycarreiro.fts.core.domain.EntityId;
 import com.johnnycarreiro.fts.core.domain.validation.ValidationHandler;
 import com.johnnycarreiro.fts.domain.value_objects.account.Account;
-import com.johnnycarreiro.fts.domain.value_objects.transfer_fee.TransferFee;
+import com.johnnycarreiro.fts.domain.entities.transfer_fee.TransferFee;
 import com.johnnycarreiro.fts.domain.value_objects.transfer_status.*;
 import lombok.Getter;
 
