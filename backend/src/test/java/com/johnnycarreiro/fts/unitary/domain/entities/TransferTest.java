@@ -13,7 +13,7 @@ import com.johnnycarreiro.fts.core.domain.exceptions.DomainException;
 import com.johnnycarreiro.fts.core.domain.validation.ThrowsValidationHandler;
 import com.johnnycarreiro.fts.domain.entities.transfer.Transfer;
 import com.johnnycarreiro.fts.domain.value_objects.account.Account;
-import com.johnnycarreiro.fts.domain.value_objects.transfer_fee.TransferFee;
+import com.johnnycarreiro.fts.domain.entities.transfer_fee.TransferFee;
 import com.johnnycarreiro.fts.domain.value_objects.transfer_status.Status;
 import com.johnnycarreiro.fts.domain.value_objects.transfer_status.TransferStatus;
 
@@ -25,7 +25,7 @@ public class TransferTest {
     final var expectedSourceAccount = Account.from("0123456789");
     final var expectedDestinationAccount = Account.from("9876543210");
     final var expectedAmount = 200.0;
-    final var expectedScheduledDate = Instant.now().toString();
+    final var expectedScheduledDate = Instant.now();
     final var expectedTransferDate = Instant.now();
     final var expectedTransferFee = TransferFee.create("Transfer Fee", 0, 0, BigDecimal.valueOf(0.0),
         BigDecimal.valueOf(0.0));
@@ -42,7 +42,7 @@ public class TransferTest {
     Assertions.assertEquals(expectedSourceAccount, sut.getSourceAccount());
     Assertions.assertEquals(expectedDestinationAccount, sut.getDestinationAccount());
     Assertions.assertEquals(BigDecimal.valueOf(expectedAmount), sut.getAmount());
-    Assertions.assertEquals(Instant.parse(expectedScheduledDate), sut.getScheduledDate());
+    Assertions.assertEquals((expectedScheduledDate), sut.getScheduledDate());
     Assertions.assertEquals(expectedTransferDateTruncated, actualTransferDateTruncated);
     Assertions.assertEquals(expectedTransferFee, sut.getTransferFee());
     Assertions.assertEquals(BigDecimal.valueOf(expectedFixedFee), sut.getFixedFee());
@@ -80,7 +80,7 @@ public class TransferTest {
     final var sourceAccount = Account.from("0123456789");
     final var destinationAccount = Account.from("9876543210");
     final var amount = 200.0;
-    final var pastDate = Instant.now().minusSeconds(60 * 60 * 24).toString(); // one day before today
+    final var pastDate = Instant.now().minusSeconds(60 * 60 * 24); // one day before today
     final var transferFee = TransferFee.create("Transfer Fee", 0, 0, BigDecimal.valueOf(0.0),
         BigDecimal.valueOf(0.0));
 
