@@ -4,6 +4,7 @@ import com.johnnycarreiro.fts.core.domain.AggregateRoot;
 import com.johnnycarreiro.fts.core.domain.EntityId;
 import com.johnnycarreiro.fts.core.domain.validation.ValidationHandler;
 import com.johnnycarreiro.fts.domain.value_objects.account.Account;
+import com.johnnycarreiro.fts.domain.value_objects.transfer_fee.TransferFee;
 import com.johnnycarreiro.fts.domain.value_objects.transfer_status.*;
 import lombok.Getter;
 
@@ -38,9 +39,24 @@ public class Transfer extends AggregateRoot<String, EntityId> {
   private Instant scheduledDate;
 
   /**
-   * The date when the transfer was created.
+   * The date when the transfer is scheduled.
    */
-  private final Instant createdAt;
+  private Instant transferDate;
+
+  /**
+   * The transfer fee for the transfer.
+   */
+  private TransferFee transferFee;
+
+  /**
+   * The fixed fee for the transfer.
+   */
+  private BigDecimal fixedFee;
+
+  /**
+   * The percentage fee for the transfer.
+   */
+  private BigDecimal percentageFee;
 
   /**
    * The current status of the transfer.
@@ -55,11 +71,15 @@ public class Transfer extends AggregateRoot<String, EntityId> {
    * @param sourceAccount      The source account.
    * @param destinationAccount The destination account.
    * @param amount             The transfer amount.
-   * @param scheduledDate      The scheduled transfer date.
+   * @param scheduledDate      When the transfer was scheduled transfer date.
+   * @param transdferDate      When the transfer is scheduled.
+   * @param transferFee        The transfer fee for the transfer.
+   * @param fixedFee           The fixed fee for the transfer.
+   * @param percentageFee      The percentage fee for the transfer.
+   * @param status             The status of the transfer.
    * @param createdAt          The creation date of the transfer.
    * @param updatedAt          The last update date of the transfer.
    * @param deletedAt          The deletion date of the transfer (if any).
-   * @param status             The status of the transfer.
    */
   private Transfer(
       final String id,
@@ -67,16 +87,23 @@ public class Transfer extends AggregateRoot<String, EntityId> {
       final Account destinationAccount,
       final BigDecimal amount,
       final Instant scheduledDate,
+      final Instant transdferDate,
+      final TransferFee transferFee,
+      final BigDecimal fixedFee,
+      final BigDecimal percentageFee,
+      final TransferStatus status,
       final Instant createdAt,
       final Instant updatedAt,
-      final Instant deletedAt,
-      final TransferStatus status) {
+      final Instant deletedAt) {
     super(EntityId.from(id), createdAt, updatedAt, deletedAt);
     this.sourceAccount = sourceAccount;
     this.destinationAccount = destinationAccount;
     this.amount = amount;
     this.scheduledDate = scheduledDate;
-    this.createdAt = createdAt;
+    this.transferDate = transdferDate;
+    this.transferFee = transferFee;
+    this.fixedFee = fixedFee;
+    this.percentageFee = percentageFee;
     this.status = status;
   }
 
@@ -86,24 +113,31 @@ public class Transfer extends AggregateRoot<String, EntityId> {
    * @param sourceAccount      The source account.
    * @param destinationAccount The destination account.
    * @param amount             The transfer amount.
-   * @param scheduledDate      The scheduled transfer date (ISO-8601 string).
+   * @param schedluedDate      The scheduled transfer date (ISO-8601 string).
+   * @param transferFee        The transfer fee for the transfer.
+   * 
    * @return A new Transfer instance.
    */
   public static Transfer create(
       final Account sourceAccount,
       final Account destinationAccount,
       final double amount,
-      final String scheduledDate) {
+      final String schedluedDate,
+      final TransferFee transferFee) {
     return new Transfer(
         EntityId.create().getValue(),
         sourceAccount,
         destinationAccount,
         BigDecimal.valueOf(amount),
-        scheduledDate != null ? Instant.parse(scheduledDate) : null,
+        schedluedDate != null ? Instant.parse(schedluedDate) : null,
+        Instant.now(),
+        transferFee,
+        transferFee.getFixedFee(),
+        transferFee.getPercentageFee(),
+        TransferStatus.from(Status.SCHEDULED),
         Instant.now(),
         Instant.now(),
-        null,
-        TransferStatus.from(Status.SCHEDULED));
+        null);
   }
 
   /**
@@ -112,7 +146,8 @@ public class Transfer extends AggregateRoot<String, EntityId> {
    * @param sourceAccount      The source account ID.
    * @param destinationAccount The destination account ID.
    * @param amount             The transfer amount.
-   * @param scheduledDate      The scheduled transfer date (ISO-8601 string).
+   * @param scheduledDate      When the transfer was scheduled transfer date.
+   * @param transferDate       When the transfer is scheduled.
    * @param createdAt          The creation date (ISO-8601 string).
    * @param updatedAt          The last update date (ISO-8601 string).
    * @param deletedAt          The deletion date (ISO-8601 string, optional).
@@ -123,34 +158,46 @@ public class Transfer extends AggregateRoot<String, EntityId> {
       String sourceAccount,
       String destinationAccount,
       double amount,
-      String scheduledDate,
+      Instant scheduledDate,
+      Instant transferDate,
+      TransferFee transferFee,
+      BigDecimal fixedFee,
+      BigDecimal percentageFee,
+      String status,
       String createdAt,
       String updatedAt,
-      String deletedAt,
-      String status) {
+      String deletedAt) {
     return new Transfer(
         EntityId.create().getValue(),
         Account.from(sourceAccount),
         Account.from(destinationAccount),
         BigDecimal.valueOf(amount),
-        Instant.parse(scheduledDate),
+        scheduledDate,
+        transferDate,
+        transferFee,
+        fixedFee,
+        percentageFee,
+        TransferStatus.fromString(status),
         Instant.parse(createdAt),
         Instant.parse(updatedAt),
-        deletedAt != null ? Instant.parse(deletedAt) : null,
-        TransferStatus.fromString(status));
+        deletedAt != null ? Instant.parse(deletedAt) : null);
   }
 
   /**
    * Updates the amount and scheduled date of the transfer.
    *
-   * @param amount        The new transfer amount.
-   * @param scheduledDate The new scheduled date.
+   * @param amount       The new transfer amount.
+   * @param transferDate The new scheduled date.
+   * @param transferFee  The new transfer fee.
    * @return The updated Transfer instance.
    */
-  public Transfer update(final BigDecimal amount, final Instant scheduledDate) {
+  public Transfer update(final BigDecimal amount, final Instant transferDate, final TransferFee transferFee) {
     this.amount = amount;
-    this.scheduledDate = scheduledDate;
+    this.transferDate = transferDate;
     this.setUpdatedAt(Instant.now());
+    this.transferFee = transferFee;
+    this.fixedFee = transferFee.getFixedFee();
+    this.percentageFee = transferFee.getPercentageFee();
     return this;
   }
 
@@ -200,7 +247,11 @@ public class Transfer extends AggregateRoot<String, EntityId> {
     return Objects.equals(sourceAccount, transfer.sourceAccount) &&
         Objects.equals(destinationAccount, transfer.destinationAccount) &&
         Objects.equals(amount, transfer.amount) &&
-        Objects.equals(scheduledDate, transfer.scheduledDate);
+        Objects.equals(scheduledDate, transfer.scheduledDate) &&
+        Objects.equals(transferFee, transfer.transferFee) &&
+        Objects.equals(fixedFee, transfer.fixedFee) &&
+        Objects.equals(percentageFee, transfer.percentageFee) &&
+        Objects.equals(transferDate, transfer.transferDate) && super.equals(o);
   }
 
   /**
@@ -209,7 +260,9 @@ public class Transfer extends AggregateRoot<String, EntityId> {
    */
   @Override
   public int hashCode() {
-    return Objects.hash(sourceAccount, destinationAccount, amount, scheduledDate);
+    return Objects.hash(sourceAccount, destinationAccount, amount, scheduledDate, transferDate, transferFee, fixedFee,
+        percentageFee, status,
+        super.hashCode());
   }
 
   /**
@@ -222,8 +275,12 @@ public class Transfer extends AggregateRoot<String, EntityId> {
         ", destinationAccount=" + destinationAccount +
         ", amount=" + amount +
         ", scheduledDate=" + scheduledDate +
-        ", createdAt=" + createdAt +
+        ", transferDate=" + transferDate +
+        ", transferFee=" + transferFee.toString() +
+        ", fixedFee=" + fixedFee +
+        ", percentageFee=" + percentageFee +
         ", status=" + status +
+        super.toString() +
         '}';
   }
 }
