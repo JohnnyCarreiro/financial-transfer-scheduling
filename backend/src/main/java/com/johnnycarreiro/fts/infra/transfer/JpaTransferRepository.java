@@ -4,7 +4,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Service;
 
 import com.johnnycarreiro.fts.core.domain.exceptions.DomainException;
@@ -103,14 +102,12 @@ public class JpaTransferRepository implements TransferRepository {
   @Override
   public Result<List<TransferFee>, DomainException> listAllFees() {
     try {
-      System.out.println(">>>> Reaching here repository");
       var feeEntities = jpaRepository.findAllFees();
       var fees = feeEntities.stream()
           .map(TransferFeeEntity::toDomain)
           .collect(Collectors.toList());
       return Result.success(fees);
     } catch (Exception e) {
-      System.out.println(e.getMessage());
       return Result.error(DomainException.with(new Error("Error listing all fees: " + e.getMessage())));
     }
   }
