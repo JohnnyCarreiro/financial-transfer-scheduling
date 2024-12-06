@@ -3,7 +3,6 @@ package com.johnnycarreiro.fts.unitary.application.transfer;
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.List;
-import java.util.UUID;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
@@ -27,14 +26,15 @@ public class CreateTransferUseCaseTest {
   @Test()
   @DisplayName("Valid Command - Create New Transfer")
   public void givenValidCommand_whenCallExecute_thenCreateANewTransfer() {
-    final var sourceAccount = UUID.randomUUID();
-    final var destinationAccount = UUID.randomUUID();
+    final var sourceAccount = "1234567890";
+    final var destinationAccount = "0987654321";
     final var amount = 100.50;
     final var scheduledDate = Instant.now();
-    final var aCommand = CreateTransferCommand.of(sourceAccount.toString(), destinationAccount.toString(), amount,
+    final var aCommand = CreateTransferCommand.of(sourceAccount, destinationAccount, amount,
         scheduledDate.toString());
     final TransferRepository transferRepository = Mockito.mock(TransferRepository.class);
     final TransferFeeCalculatorService feeCalculatorService = Mockito.mock(TransferFeeCalculatorService.class);
+
     var transferFees = List.of(
         TransferFee.create("Mesmo Dia", 0, 0, new BigDecimal("3.00"), new BigDecimal("0.025")),
         TransferFee.create("De 1 a 10 dias", 1, 10, new BigDecimal("12.00"), new BigDecimal("0.0")),
@@ -43,7 +43,12 @@ public class CreateTransferUseCaseTest {
         TransferFee.create("De 31 a 40 dias", 31, 40, new BigDecimal("0.00"), new BigDecimal("0.047")),
         TransferFee.create("De 41 a 50 dias", 41, 50, new BigDecimal("0.00"), new BigDecimal("0.017")));
 
-    Mockito.when(feeCalculatorService.calculateFee(any(), any())).thenReturn(transferFees.get(0));
+    TransferFee transferFee = transferFees.get(0);
+
+    Mockito.when(feeCalculatorService.setTransferFee(any()))
+        .thenReturn(Result.success(null));
+    Mockito.when(feeCalculatorService.calculateFee(any(), any()))
+        .thenReturn(Result.success(transferFee));
     Mockito.when(transferRepository.listAllFees()).thenReturn(Result.success(transferFees));
     Mockito.when(transferRepository.save(any())).thenReturn(Result.success(null));
 
