@@ -32,7 +32,7 @@ public class TransferController {
   }
 
   @PostMapping
-  public ResponseEntity<?> create(@Valid @RequestBody TransferRequest request) {
+  public ResponseEntity<?> create(@RequestBody TransferRequest request) {
     var result = createTransferUseCase.execute(request.toCommand());
     return result.isSuccess()
         ? ResponseEntity.status(HttpStatus.CREATED).body(TransferPresenter.present(result.unwrap())) // avoid use unwrap
