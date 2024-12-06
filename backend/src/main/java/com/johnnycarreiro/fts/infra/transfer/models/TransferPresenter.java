@@ -13,8 +13,12 @@ public class TransferPresenter {
         "destinationAccount", transfer.getDestinationAccount().getValue(),
         "amount", transfer.getAmount(),
         "scheduledDate", transfer.getScheduledDate(),
+        "transferDate", transfer.getTransferDate(),
+        "status", transfer.getStatus(),
         "fee", Map.of(
-            "fixedFee", transfer.getTransferFee().getFixedFee(),
-            "percentageFee", transfer.getTransferFee().getPercentageFee()));
+            "fixedFee", transfer.getFixedFee(),
+            "percentageFee", transfer.getPercentageFee()),
+        "createdAt", transfer.getCreatedAt(),
+        "updatedAt", transfer.getUpdatedAt());
   }
 }
