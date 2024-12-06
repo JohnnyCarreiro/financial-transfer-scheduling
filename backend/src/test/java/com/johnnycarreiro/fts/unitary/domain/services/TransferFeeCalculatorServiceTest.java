@@ -19,7 +19,7 @@ public class TransferFeeCalculatorServiceTest {
   void givenValidDates_whenCalculateFee_thenReturnsCorrectFee() {
     var fees = List.of(
         TransferFee.create("Mesmo Dia", 0, 0, new BigDecimal("3.00"), new BigDecimal("0.025")),
-        TransferFee.create("De 1 a 10 dias", 1, 10, new BigDecimal("12.00"), new BigDecimal("0.0")),
+        TransferFee.create("De 1 a 10 dias", 1, 10, new BigDecimal("12.00"), new BigDecimal("0.00")),
         TransferFee.create("De 11 a 20 dias", 11, 20, new BigDecimal("0.00"), new BigDecimal("0.082")),
         TransferFee.create("De 21 a 30 dias", 21, 30, new BigDecimal("0.00"), new BigDecimal("0.069")),
         TransferFee.create("De 31 a 40 dias", 31, 40, new BigDecimal("0.00"), new BigDecimal("0.047")),
@@ -30,9 +30,10 @@ public class TransferFeeCalculatorServiceTest {
     var scheduledDateAt = Instant.parse("2024-12-01T10:00:00Z");
     var scheduledDateFor = Instant.parse("2024-12-11T10:00:00Z");
 
-    TransferFee fee = service.calculateFee(scheduledDateAt, scheduledDateFor);
+    var feeResult = service.calculateFee(scheduledDateAt, scheduledDateFor);
+    TransferFee fee = feeResult.getSuccess();
 
     Assertions.assertEquals(new BigDecimal("12.00"), fee.getFixedFee());
-    Assertions.assertEquals(new BigDecimal("0.0"), fee.getPercentageFee());
+    Assertions.assertEquals(new BigDecimal("0.00"), fee.getPercentageFee());
   }
 }
