@@ -7,10 +7,10 @@ import java.util.UUID;
  * Command object for creating a new Transfer.
  */
 public record CreateTransferCommand(
-    UUID sourceAccount,
-    UUID destinationAccount,
+    String sourceAccount,
+    String destinationAccount,
     double amount,
-    Instant scheduledDate) {
+    String scheduledDate) {
   /**
    * Factory method to create a new CreateTransferCommand from String IDs for
    * source and destination accounts.
@@ -28,11 +28,6 @@ public record CreateTransferCommand(
       final String destinationAccountStr,
       final double amount,
       final String scheduledDate) {
-    // Convert the String IDs to UUID
-    UUID sourceAccount = UUID.fromString(sourceAccountStr);
-    UUID destinationAccount = UUID.fromString(destinationAccountStr);
-    Instant scheduledDateParsed = Instant.parse(scheduledDate); // Convert ISO-8601 string to Instant
-
-    return new CreateTransferCommand(sourceAccount, destinationAccount, amount, scheduledDateParsed);
+    return new CreateTransferCommand(sourceAccountStr, destinationAccountStr, amount, scheduledDate);
   }
 }
