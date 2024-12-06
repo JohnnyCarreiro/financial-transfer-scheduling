@@ -1,5 +1,14 @@
 ---
+server:
+  servlet:
+    context-path: /api/v1
+  port: 8080
+  compression:
+    enabled: true
+    mime-types: text/html,text/xml,text/plain,text/css,text/javascript,application/javascript,application/json
+    min-response-size: 1024
 spring:
+  profiles.active: dev
   application:
     name: backend
   datasource:
@@ -8,15 +17,19 @@ spring:
     username: sa
     password: password
     initialization-mode: always
-    schema: classpath:/db/schema.sql
-    data: classpath:/db/data.sql
+    # schema: classpath:/db/schema.sql
+    # data: classpath:/db/data.sql
   jpa:
     hibernate:
-      ddl-auto: none
+      ddl-auto: create
+      # ddl-auto: none
     show-sql: true
     properties:
       hibernate:
         format_sql: true
+  sql:
+    init:
+      mode: always
   h2:
     console:
       enabled: true
@@ -24,3 +37,4 @@ spring:
 logging:
   level:
     org.hibernate.SQL: DEBUG
+    org.springframework.jdbc.datasource.init.ScriptUtils: DEBUG
