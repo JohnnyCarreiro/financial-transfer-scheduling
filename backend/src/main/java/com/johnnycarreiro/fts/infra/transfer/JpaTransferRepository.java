@@ -5,6 +5,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Repository;
+import org.springframework.stereotype.Service;
 
 import com.johnnycarreiro.fts.core.domain.exceptions.DomainException;
 import com.johnnycarreiro.fts.core.domain.validation.Error;
@@ -16,7 +17,7 @@ import com.johnnycarreiro.fts.infra.transfer.persistence.TransferEntity;
 import com.johnnycarreiro.fts.infra.transfer.persistence.TransferFeeEntity;
 import com.johnnycarreiro.fts.infra.transfer.persistence.TransferJpaRepository;
 
-@Repository
+@Service
 public class JpaTransferRepository implements TransferRepository {
 
   private final TransferJpaRepository jpaRepository;
@@ -28,9 +29,20 @@ public class JpaTransferRepository implements TransferRepository {
   @Override
   public Result<Void, DomainException> save(Transfer transfer) {
     try {
-      jpaRepository.save(TransferEntity.fromDomain(transfer));
+      if (transfer.getTransferFee() == null) {
+        return Result.error(DomainException.with(new Error("Transfer must have a TransferFee associated")));
+      }
+
+      TransferEntity entity = TransferEntity.fromDomain(transfer);
+
+      if (entity.getTransferFee() == null || entity.getTransferFee().getId() == null) {
+        return Result.error(DomainException.with(new Error("Invalid TransferFee associated")));
+      }
+
+      jpaRepository.save(entity);
       return Result.success(null);
     } catch (Exception e) {
+      // log.error("Error saving transfer: ", e);
       return Result.error(DomainException.with(new Error("Error saving transfer: " + e.getMessage())));
     }
   }
@@ -67,8 +79,21 @@ public class JpaTransferRepository implements TransferRepository {
         return Result.error(DomainException.with(new Error("Transfer not found")));
       }
 
+      // Verificar se TransferFee está associada corretamente
+      if (transfer.getTransferFee() == null) {
+        return Result.error(DomainException.with(new Error("Transfer must have a TransferFee associated")));
+      }
+
       var entity = TransferEntity.fromDomain(transfer);
-      jpaRepository.save(entity); // Atualiza o registro.
+
+      // Se a TransferFee não existir no banco de dados, pode lançar um erro
+      if (entity.getTransferFee() == null || entity.getTransferFee().getId() == null) {
+        return Result.error(DomainException.with(new Error("Invalid TransferFee associated")));
+      }
+
+      // Atualiza a Transfer
+      jpaRepository.save(entity);
+
       return Result.success(null);
     } catch (Exception e) {
       return Result.error(DomainException.with(new Error("Error updating transfer: " + e.getMessage())));
@@ -78,12 +103,14 @@ public class JpaTransferRepository implements TransferRepository {
   @Override
   public Result<List<TransferFee>, DomainException> listAllFees() {
     try {
+      System.out.println(">>>> Reaching here repository");
       var feeEntities = jpaRepository.findAllFees();
       var fees = feeEntities.stream()
           .map(TransferFeeEntity::toDomain)
           .collect(Collectors.toList());
       return Result.success(fees);
     } catch (Exception e) {
+      System.out.println(e.getMessage());
       return Result.error(DomainException.with(new Error("Error listing all fees: " + e.getMessage())));
     }
   }
