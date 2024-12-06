@@ -7,6 +7,8 @@ import com.johnnycarreiro.fts.core.domain.validation.Validator;
 
 import java.math.BigDecimal;
 import java.time.Instant;
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.Objects;
 
 public class TransferValidator extends Validator {
@@ -19,6 +21,7 @@ public class TransferValidator extends Validator {
 
   @Override
   public void validate() {
+
     if (Objects.isNull(transfer)) {
       this.validationHandler().append(new Error("Transfer cannot be null"));
       return;
@@ -43,7 +46,13 @@ public class TransferValidator extends Validator {
     if (transfer.getScheduledDate() == null) {
       this.validationHandler().append(new Error("Scheduled date cannot be null"));
     }
-    if (transfer.getScheduledDate().isBefore(Instant.now())) {
+    LocalDate scheduledDate = transfer.getScheduledDate()
+        .atZone(ZoneId.systemDefault())
+        .toLocalDate();
+    LocalDate today = Instant.now()
+        .atZone(ZoneId.systemDefault())
+        .toLocalDate();
+    if (scheduledDate.isBefore(today)) {
       this.validationHandler().append(new Error("Scheduled date cannot be in the past"));
     }
   }
