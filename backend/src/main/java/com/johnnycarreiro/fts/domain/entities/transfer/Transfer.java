@@ -82,7 +82,7 @@ public class Transfer extends AggregateRoot<String, EntityId> {
    * @param deletedAt          The deletion date of the transfer (if any).
    */
   private Transfer(
-      final String id,
+      final EntityId id,
       final Account sourceAccount,
       final Account destinationAccount,
       final BigDecimal amount,
@@ -95,7 +95,7 @@ public class Transfer extends AggregateRoot<String, EntityId> {
       final Instant createdAt,
       final Instant updatedAt,
       final Instant deletedAt) {
-    super(EntityId.from(id), createdAt, updatedAt, deletedAt);
+    super(id, createdAt, updatedAt, deletedAt);
     this.sourceAccount = sourceAccount;
     this.destinationAccount = destinationAccount;
     this.amount = amount;
@@ -125,7 +125,7 @@ public class Transfer extends AggregateRoot<String, EntityId> {
       final Instant schedluedDate,
       final TransferFee transferFee) {
     return new Transfer(
-        EntityId.create().getValue(),
+        EntityId.create(),
         sourceAccount,
         destinationAccount,
         BigDecimal.valueOf(amount),
@@ -155,6 +155,7 @@ public class Transfer extends AggregateRoot<String, EntityId> {
    * @return A Transfer instance.
    */
   public static Transfer from(
+      String id,
       String sourceAccount,
       String destinationAccount,
       double amount,
@@ -164,11 +165,11 @@ public class Transfer extends AggregateRoot<String, EntityId> {
       BigDecimal fixedFee,
       BigDecimal percentageFee,
       String status,
-      String createdAt,
-      String updatedAt,
-      String deletedAt) {
+      Instant createdAt,
+      Instant updatedAt,
+      Instant deletedAt) {
     return new Transfer(
-        EntityId.create().getValue(),
+        EntityId.from(id),
         Account.from(sourceAccount),
         Account.from(destinationAccount),
         BigDecimal.valueOf(amount),
@@ -178,9 +179,9 @@ public class Transfer extends AggregateRoot<String, EntityId> {
         fixedFee,
         percentageFee,
         TransferStatus.fromString(status),
-        Instant.parse(createdAt),
-        Instant.parse(updatedAt),
-        deletedAt != null ? Instant.parse(deletedAt) : null);
+        createdAt,
+        updatedAt,
+        deletedAt);
   }
 
   /**
