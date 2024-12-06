@@ -2,6 +2,7 @@ package com.johnnycarreiro.fts.core.domain.exceptions;
 
 import java.util.List;
 import com.johnnycarreiro.fts.core.domain.validation.Error;
+import com.johnnycarreiro.fts.core.domain.validation.ValidationHandler;
 
 public class DomainException extends NoStackTraceException {
 
@@ -21,7 +22,13 @@ public class DomainException extends NoStackTraceException {
     return new DomainException("", errors);
   }
 
+  public static DomainException with(ValidationHandler validationHandler) {
+    List<Error> errors = validationHandler.getErrors();
+    return new DomainException("", errors);
+  }
+
   public List<Error> getErrors() {
     return errors;
   }
+
 }
