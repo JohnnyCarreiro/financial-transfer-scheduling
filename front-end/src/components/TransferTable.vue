@@ -9,7 +9,7 @@ import {
 	TableRow,
 } from "@/components/ui/table";
 import { Transfer } from "@/@types";
-import { formatDate } from "@/lib/utils";
+import { formatDate, formatCurrency } from "@/lib/utils";
 
 defineProps<{
 	transfers: Transfer[];
@@ -27,7 +27,7 @@ defineProps<{
         <TableHead>Conta Destino</TableHead>
         <TableHead>Agendado para</TableHead>
         <TableHead>Agendado em</TableHead>
-        <TableHead>Tarifa em R$</TableHead>
+        <TableHead>Tarifa fixa (R$)</TableHead>
         <TableHead>Tarifa em %</TableHead>
         <TableHead>Criado em</TableHead>
       </TableRow>
@@ -40,7 +40,7 @@ defineProps<{
         <TableCell>{{ transfer.destinationAccount }}</TableCell>
         <TableCell>{{ formatDate(transfer.scheduledDate) }}</TableCell>
         <TableCell>{{ formatDate(transfer.transferDate) }}</TableCell>
-        <TableCell>{{ transfer.fee.fixedFee }}</TableCell>
+        <TableCell>{{ formatCurrency(transfer.fee.fixedFee) }}</TableCell>
         <TableCell>{{(transfer.fee.percentageFee * 100).toFixed(2)}} %</TableCell>
         <TableCell>{{ formatDate(transfer.createdAt) }}</TableCell>
       </TableRow>

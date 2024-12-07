@@ -9,7 +9,7 @@ export const formatCurrency = (amount: number): string => {
 	return Intl.NumberFormat("pt-BR", {
 		style: "currency",
 		currency: "BRL",
-	}).format(amount / 100);
+	}).format(amount);
 };
 
 export const formatDate = (rawDate: string): string => {
