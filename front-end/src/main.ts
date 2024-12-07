@@ -1,5 +1,10 @@
-import { createApp } from 'vue'
-import './style.css'
-import App from './App.vue'
+import { createApp } from "vue";
+import App from "./App.vue";
+import router from "./router";
+import "./assets/index.css";
+import { transferService } from "@/config/ServiceProvider";
 
-createApp(App).mount('#app')
+createApp(App)
+	.provide("transferService", transferService)
+	.use(router)
+	.mount("#app");
