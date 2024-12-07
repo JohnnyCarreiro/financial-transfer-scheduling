@@ -151,4 +151,34 @@ public class Result<T, E> {
     }
     return success;
   }
+
+  /**
+   * Applies one of two functions to the Result, depending on its state.
+   *
+   * @param onSuccess the function to apply if the Result is success
+   * @param onError   the function to apply if the Result is error
+   * @param <R>       the return type of the fold operation
+   * @return the result of the applied function
+   */
+  public <R> R fold(Function<T, R> onSuccess, Function<E, R> onError) {
+    return isSuccess() ? onSuccess.apply(success) : onError.apply(error);
+  }
+
+  /**
+   * Applies one of two functions to the Result, depending on its state.
+   *
+   * @param onSuccess the function to apply if the Result is success
+   * @param onError   the function to apply if the Result is error
+   * @param <U>       the type of the success value of the onSuccess function
+   * @param <F>       the type of the error value of the onError function
+   * @return the result of the applied function
+   */
+  public <U, F> Result<U, F> flatMap(
+      Function<T, Result<U, F>> onSuccess,
+      Function<E, Result<U, F>> onError) {
+    if (isSuccess()) {
+      return onSuccess.apply(success);
+    }
+    return onError.apply(error);
+  }
 }

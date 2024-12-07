@@ -1,21 +1,22 @@
 package com.johnnycarreiro.fts.infra.api.controllers;
 
-import org.springframework.http.HttpStatus;
+import java.net.URI;
+import java.util.function.Function;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-// import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.johnnycarreiro.fts.application.transfer.create.CreateTransferUseCase;
 import com.johnnycarreiro.fts.application.transfer.services.TransferService;
+import com.johnnycarreiro.fts.domain.entities.transfer.Transfer;
 import com.johnnycarreiro.fts.infra.transfer.models.TransferPresenter;
 import com.johnnycarreiro.fts.infra.transfer.models.TransferRequest;
-
-import jakarta.validation.Valid;
+import com.johnnycarreiro.fts.core.domain.validation.ValidationHandler;
 
 @RestController
 @RequestMapping("/transfers")
@@ -34,10 +35,15 @@ public class TransferController {
   @PostMapping
   public ResponseEntity<?> create(@RequestBody TransferRequest request) {
     var result = createTransferUseCase.execute(request.toCommand());
-    return result.isSuccess()
-        ? ResponseEntity.status(HttpStatus.CREATED).body(TransferPresenter.present(result.unwrap())) // avoid use unwrap
-                                                                                                     // in production
-        : ResponseEntity.badRequest().body(result.getError());
+
+    final Function<Transfer, ResponseEntity<?>> onSuccess = success -> ResponseEntity
+        .created(URI.create("/transfers"))
+        .body(TransferPresenter.present(success));
+
+    final Function<ValidationHandler, ResponseEntity<?>> onError = ValidationHandler -> ResponseEntity
+        .unprocessableEntity().body(ValidationHandler);
+
+    return result.fold(onSuccess, onError);
   }
 
   // @PutMapping("/{id}")

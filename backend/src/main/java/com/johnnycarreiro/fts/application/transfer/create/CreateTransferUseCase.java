@@ -59,11 +59,10 @@ public class CreateTransferUseCase {
    * @return a `Result<Transfer, DomainException>` indicating the success or
    *         failure of the transfer creation.
    */
-  public Result<Transfer, DomainException> execute(CreateTransferCommand transferCommnd) {
+  public Result<Transfer, ValidationHandler> execute(CreateTransferCommand transferCommnd) {
     final var transferFees = transferRepository.listAllFees();
     if (transferFees.isError()) {
-      return Result
-          .error(DomainException.with(new Error("Error listing all fees: " + transferFees.getError().toString())));
+      return Result.error(StackValidationHandler.create(transferFees.getError()));
     }
 
     this.feeCalculatorService.setTransferFee(transferFees.getSuccess());
@@ -73,9 +72,7 @@ public class CreateTransferUseCase {
         Instant.parse(transferCommnd.scheduledDate()));
 
     if (transferFeeResult.isError()) {
-      return Result
-          .error(
-              DomainException.with(new Error("Error calculating fee: " + transferFeeResult.getError().toString())));
+      return Result.error(StackValidationHandler.create(transferFees.getError()));
     }
 
     TransferFee transferFee = transferFeeResult.getSuccess();
@@ -90,7 +87,7 @@ public class CreateTransferUseCase {
     transfer.validate(validationHandler);
 
     return validationHandler.hasErrors()
-        ? Result.error(DomainException.with(validationHandler))
+        ? Result.error(validationHandler)
         : create(transfer);
   }
 
@@ -106,12 +103,11 @@ public class CreateTransferUseCase {
    * @return a `Result<Transfer, DomainException>` indicating the success or
    *         failure of the save operation.
    */
-  private Result<Transfer, DomainException> create(Transfer transfer) {
+  private Result<Transfer, ValidationHandler> create(Transfer transfer) {
     Result<Void, DomainException> saveResult = transferRepository.save(transfer);
 
     if (saveResult.isError()) {
-      return Result
-          .error(DomainException.with(new Error("Failed to create transfer: " + saveResult.getError().toString())));
+      return Result.error(StackValidationHandler.create(saveResult.getError()));
     }
 
     return Result.success(transfer);
