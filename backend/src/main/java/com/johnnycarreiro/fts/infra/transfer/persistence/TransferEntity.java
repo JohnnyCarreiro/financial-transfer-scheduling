@@ -13,6 +13,7 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
@@ -60,6 +61,17 @@ public class TransferEntity {
 
   @Column(name = "deleted_at", nullable = true, columnDefinition = "TIMESTAMP")
   private Instant deletedAt;
+
+  @PrePersist
+  public void prePersist() {
+    Instant now = Instant.now();
+    if (createdAt == null) {
+      this.createdAt = now;
+    }
+    if (updatedAt == null) {
+      this.updatedAt = now;
+    }
+  }
 
   @PreUpdate
   public void preUpdate() {

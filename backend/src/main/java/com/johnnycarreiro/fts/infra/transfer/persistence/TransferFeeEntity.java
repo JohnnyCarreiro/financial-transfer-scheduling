@@ -8,6 +8,7 @@ import com.johnnycarreiro.fts.domain.entities.transfer_fee.TransferFee;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
+import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
@@ -48,6 +49,17 @@ public class TransferFeeEntity {
 
   @Column(name = "deleted_at", nullable = true, columnDefinition = "TIMESTAMP")
   private Instant deletedAt;
+
+  @PrePersist
+  public void prePersist() {
+    Instant now = Instant.now();
+    if (createdAt == null) {
+      this.createdAt = now;
+    }
+    if (updatedAt == null) {
+      this.updatedAt = now;
+    }
+  }
 
   @PreUpdate
   public void preUpdate() {
