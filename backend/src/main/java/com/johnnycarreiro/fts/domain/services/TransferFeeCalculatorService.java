@@ -19,17 +19,17 @@ public class TransferFeeCalculatorService {
   /**
    * Calculates the fee for a transfer based on the scheduled and target dates.
    *
-   * @param scheduledDateAt The date the transfer was scheduled.
-   * @param scheduleDateFor The date the transfer is intended for.
+   * @param scheduledDateAt  The date the transfer was scheduled.
+   * @param scheduledDateFor The date the transfer is intended for.
    * @return A Result encapsulating either the matched TransferFee or an error
    *         message.
    */
-  public Result<TransferFee, DomainException> calculateFee(Instant scheduledDateAt, Instant scheduleDateFor) {
+  public Result<TransferFee, DomainException> calculateFee(Instant scheduledDateAt, Instant scheduledDateFor) {
     if (feeRules == null || feeRules.isEmpty()) {
       return Result.error(DomainException.with(new Error("Fee rules are not configured.")));
     }
 
-    long daysDifference = Duration.between(scheduledDateAt, scheduleDateFor).toDays();
+    long daysDifference = Duration.between(scheduledDateAt, scheduledDateFor).toDays();
 
     return feeRules.stream()
         .filter(rule -> (rule.getMinDays() <= daysDifference) &&
