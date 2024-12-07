@@ -73,7 +73,7 @@ const onSubmit = handleSubmit(async (values) => {
 			sourceAccount: values.sourceAccount,
 			destinationAccount: values.destinationAccount,
 			amount: parseFloat(values.amount.toString()),
-			scheduledDate: new Date(values.scheduledDate).toISOString(),
+			scheduledDate: new Date(values.scheduledDate + "T00:00:00").toISOString(),
 		});
 
 		if (response != null) {
